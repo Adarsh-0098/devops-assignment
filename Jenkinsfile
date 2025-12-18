@@ -13,26 +13,15 @@ pipeline {
             }
         }
 
-        stage('Install Trivy') {
-            steps {
-                sh '''
-                apt-get update
-                apt-get install -y wget gnupg lsb-release
-
-                wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add -
-                echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -cs) main" > /etc/apt/sources.list.d/trivy.list
-
-                apt-get update
-                apt-get install -y trivy
-                trivy --version
-                '''
-            }
-        }
-
         stage('Trivy Scan Terraform') {
             steps {
                 sh '''
-                trivy config terraform --severity HIGH,CRITICAL --exit-code 1 .
+                docker run --rm \
+                  -v "$PWD:/project" \
+                  aquasec/trivy:latest \
+                  config /project/terraform \
+                  --severity HIGH,CRITICAL \
+                  --exit-code 1
                 '''
             }
         }
