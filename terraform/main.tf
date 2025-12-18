@@ -3,12 +3,13 @@ resource "aws_security_group" "insecure_sg" {
   description = "Security group with intentional vulnerability"
 
   ingress {
-    description = "Allow SSH from anywhere (INSECURE)"
+    description = "Allow SSH only from trusted IP"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # ❌ INTENTIONAL SECURITY ISSUE
+    cidr_blocks = ["103.178.253.170/32"]
   }
+
 
   ingress {
     description = "Allow HTTP"
