@@ -1,0 +1,17 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Python
+__pycache__/
+venv/
+
+# Docker
+*.tar
+*.img
+
+# OS
+Thumbs.db
+.DS_Store
