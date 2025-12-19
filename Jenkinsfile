@@ -1,45 +1,31 @@
 pipeline {
-    agent none
+    agent any
 
     stages {
 
         stage('Checkout') {
-            agent any
             steps {
                 checkout scm
             }
         }
 
         stage('Trivy Scan Terraform') {
-            agent {
-                docker {
-                    image 'aquasec/trivy:latest'
-                    args '-v $PWD:/project'
-                    reuseNode true
-                }
-            }
             steps {
                 sh '''
-                trivy config /project/terraform \
-                  --severity HIGH,CRITICAL \
-                  --exit-code 1
+                docker run --rm -v $PWD:/project aquasec/trivy:latest \
+                config /project/terraform --severity HIGH,CRITICAL --exit-code 1
                 '''
             }
         }
 
         stage('Terraform Init & Plan') {
-            agent {
-                docker {
-                    image 'hashicorp/terraform:1.6'
-                    args '-v $PWD:/project'
-                    reuseNode true
-                }
-            }
             steps {
                 sh '''
-                cd /project/terraform
-                terraform init
-                terraform plan
+                docker run --rm -v $PWD:/project -w /project/terraform \
+                hashicorp/terraform:1.6 init
+
+                docker run --rm -v $PWD:/project -w /project/terraform \
+                hashicorp/terraform:1.6 plan
                 '''
             }
         }
