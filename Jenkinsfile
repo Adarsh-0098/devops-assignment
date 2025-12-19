@@ -15,6 +15,7 @@ pipeline {
                 docker {
                     image 'aquasec/trivy:latest'
                     args '-v $PWD:/project'
+                    reuseNode true
                 }
             }
             steps {
@@ -31,6 +32,7 @@ pipeline {
                 docker {
                     image 'hashicorp/terraform:1.6'
                     args '-v $PWD:/project'
+                    reuseNode true
                 }
             }
             steps {
